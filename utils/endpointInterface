@@ -1,0 +1,4 @@
+import { Request, Response } from 'express';
+
+export type TypeRequest<T = any> = Request<{}, any, T, any>;
+export type TypeResponse<T = any> = Response<T>;

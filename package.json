@@ -1,0 +1,36 @@
+{
+  "name": "gateway-dropbox-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "eslintIgnore": [
+    "node_modules"
+  ],
+  "dependencies": {
+    "@prisma/client": "^7.4.0",
+    "axios": "^1.13.5",
+    "cookie": "^1.1.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "cron": "^4.4.0",
+    "date-fns": "^4.1.0",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "node-cache": "^5.1.2",
+    "nodemon": "^3.1.11",
+    "uuid": "^13.0.0"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "node --test",
+    "dev": "nodemon --exec \"node --openssl-legacy-provider\" ./index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "globals": "^17.3.0",
+    "prisma": "^7.4.0"
+  }
+}
