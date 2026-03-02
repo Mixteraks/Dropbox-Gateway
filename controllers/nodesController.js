@@ -7,6 +7,6 @@ export const nodesList = async (req, res) => {
         res.json(output)
     }
     catch (error){
-        res.status(301).json({"status":"error","message":"Something went wrong", "context": error})
+        res.status(400).json({"status":"error","message":"Something went wrong", "context": error})
     }
 }
