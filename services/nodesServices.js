@@ -1,23 +1,21 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '../lib/prisma.ts'
 
 class nodesServices{
-    async nodeList(req){
-        
+    async nodeList(req, res){
+        return null;
     }
 
     // Register or update a node in Postgres using Prisma. Expects fields in `req.body`.
-    async registerNode(req){
+    async registerNode(req, res){
         const src = req && req.body ? req.body : req || {}
-        const { ip_address, id: hardware_id, name, total_space, created_at, last_connection, port } = src
+        const { current_ip, hardware_id, name, total_space, created_at, last_connection, port } = src
 
         // try to find existing by hardware_id
-        let node = await prisma.nodes.findFirst({ where: { hardware_id } })
+        let node = await prisma.Nodes.findFirst({ where: { hardware_id } })
 
         const data = {
             hardware_id: hardware_id || undefined,
-            current_ip: ip_address || undefined,
+            current_ip: current_ip || undefined,
             name: name || undefined,
             total_space: typeof total_space !== 'undefined' && total_space !== null ? BigInt(total_space) : undefined,
             port: typeof port !== 'undefined' ? Number(port) : undefined,
@@ -26,9 +24,9 @@ class nodesServices{
         }
 
         if(node){
-            node = await prisma.nodes.update({ where: { id: node.id }, data })
+            node = await prisma.Nodes.update({ where: { id: node.id }, data })
         } else {
-            node = await prisma.nodes.create({ data })
+            node = prisma.Nodes.create({ data })
         }
 
         return node
@@ -42,11 +40,11 @@ class nodesServices{
         // find node by hardware_id; if not found, create placeholder
         let node = null
         if(hardware_id){
-            node = await prisma.nodes.findFirst({ where: { hardware_id } })
+            node = await prisma.Nodes.findFirst({ where: { hardware_id } })
         }
 
         if(!node){
-            node = await prisma.nodes.create({ data: {
+            node = await prisma.Nodes.create({ data: {
                 hardware_id: hardware_id || undefined,
                 current_ip: ip_address || undefined,
                 name: name || undefined

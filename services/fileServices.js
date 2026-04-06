@@ -1,5 +1,5 @@
-import { FormData } from 'form-data'
-import { prisma } from '@prisma/client'
+import FormData from 'form-data'
+import { prisma } from '../lib/prisma.ts'
 import { v4 } from 'uuid'
 
 class fileServices {

@@ -7,50 +7,32 @@ datasource db {
   provider = "postgresql"
 }
 
-// ===================
-// =====  FILES  =====
-// ===================
-
 model File {
   id           String         @id @default(uuid())
   display_name String
   storage_name String
-  user         User           @relation(fields: [user_id], references: [id])
   user_id      String
-  folder       Folder?         @relation(fields: [folder_id], references: [id])
   folder_id    String?
   size         BigInt
   created      DateTime       @default(now())
-  locations    FileLocation[] // Plik może być w wielu miejscach
+  folder       Folder?        @relation(fields: [folder_id], references: [id])
+  user         User           @relation(fields: [user_id], references: [id])
+  locations    FileLocation[]
 }
 
 model Folder {
   id           String   @id @default(uuid())
   display_name String
-  user         User     @relation(fields: [user_id], references: [id])
   user_id      String
   parent_id    String?
-  parent       Folder?  @relation("Subfolders", fields: [parent_id], references: [id])
-  subfolders   Folder[] @relation("Subfolders")
-  files        File[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  files        File[]
+  parent       Folder?  @relation("Subfolders", fields: [parent_id], references: [id])
+  subfolders   Folder[] @relation("Subfolders")
+  user         User     @relation(fields: [user_id], references: [id])
 
   @@index([user_id])
-}
-
-// ==================
-// =====  USER  =====
-// ==================
-
-enum UserRole {
-  admin
-  user
-}
-
-enum TokenType {
-  magicAuth
-  passRes
 }
 
 model User {
@@ -62,42 +44,32 @@ model User {
   fullName String?
   role     UserRole  @default(user)
   created  DateTime  @default(now())
-  tokeners Tokener[]
-  sessions  Session[]
   files    File[]
   folders  Folder[]
+  sessions Session[]
+  tokeners Tokener[]
 }
 
 /// Toten to change pass
 model Tokener {
   id        String    @id @default(uuid())
   token     String
-  user      User      @relation(fields: [user_id], references: [id])
   user_id   String
   type      TokenType
   expireAt  DateTime
   createdAt DateTime  @default(now())
+  user      User      @relation(fields: [user_id], references: [id])
 }
 
 /// Session Data
 model Session {
   id       String   @id @default(uuid())
   token    String
-  user     User     @relation(fields: [user_id], references: [id])
   user_id  String
   deviceId String
   exp      DateTime
   created  DateTime @default(now())
-}
-
-// ===================
-// =====  NODES  =====
-// ===================
-
-enum NodeStates {
-  online
-  offline
-  error
+  user     User     @relation(fields: [user_id], references: [id])
 }
 
 /// State configuration for the node. Restart when connect node <-> gateway
@@ -111,15 +83,14 @@ model Nodes {
   is_approved   Boolean        @default(false)
   last_connect  DateTime       @default(now())
   created_at    DateTime       @default(now())
-  nodeHistories Node_History[]
   fileLocations FileLocation[]
+  nodeHistories Node_History[]
 }
 
 /// Historical data of nodes
 model Node_History {
   id           Int        @id @default(autoincrement())
   current_ip   String
-  node         Nodes      @relation(fields: [node_id], references: [id])
   node_id      String
   status       NodeStates
   name         String?
@@ -130,21 +101,36 @@ model Node_History {
   ram_total    BigInt
   connect_from DateTime?
   recorced_at  DateTime   @default(now())
+  node         Nodes      @relation(fields: [node_id], references: [id])
 }
 
+model FileLocation {
+  id       String             @id @default(uuid())
+  file_id  String
+  nodes_id String
+  status   FileLocationStates
+  file     File               @relation(fields: [file_id], references: [id], onDelete: Cascade)
+  nodes    Nodes              @relation(fields: [nodes_id], references: [id], onDelete: Cascade)
+}
+
+enum UserRole {
+  admin
+  user
+}
+
+enum TokenType {
+  magicAuth
+  passRes
+}
+
+enum NodeStates {
+  online
+  offline
+  error
+}
 
 enum FileLocationStates {
   uploading
   done
   corrupted
-}
-
-// Tabela łącząca FILE <> NODE (n:n) z dodatkami
-model FileLocation {
-  id       String @id @default(uuid())
-  file_id  String
-  nodes_id String
-  file     File   @relation(fields: [file_id], references: [id], onDelete: Cascade)
-  nodes    Nodes  @relation(fields: [nodes_id], references: [id], onDelete: Cascade)
-  status   FileLocationStates
 }

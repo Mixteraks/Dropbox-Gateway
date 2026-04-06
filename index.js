@@ -4,7 +4,6 @@ import 'dotenv/config'
 import express from 'express'
 import { rateLimit } from 'express-rate-limit'
 import http from 'http'
-import corsOptions from './utils/cors/corsOptions.js'
 import runCron from './utils/cron/runCron.js'
 import rateLimitOptions from './utils/rateLimit/rateLimitOptions.js'
 import filesAPI from './routes/filesAPI.js'
@@ -16,7 +15,7 @@ const app = express()
 // CONFIG
 app.use(express.json({ limit: '5mb' }))
 app.use(cookieParser())
-app.use(cors(corsOptions()))
+app.use(cors())
 app.use(rateLimit(rateLimitOptions))
 
 // UTILS

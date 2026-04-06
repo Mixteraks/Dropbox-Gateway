@@ -1,4 +1,4 @@
-import fileServices from "../services/fileServices"
+import fileServices from "../services/fileServices.js"
 
 export const postFiles = async (req, res) => {
     try{
