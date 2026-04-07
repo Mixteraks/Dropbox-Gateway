@@ -14,3 +14,12 @@ Moduł gateway jest mostem między użytkownikiem a poszczególnym nodem
 ### Node Routes
 - `/nodes` (**GET**) - Zwraca liste podłączonych nodów do zapisu wraz z ich stanem
 - `/nodes/:id` (**GET**) - Zwraca stan podłączonego noda (id)
+
+
+# TODO
+[] Node List (SSE)
+[] Auto HistoryPush from Redis
+[] Try autoconnect to saved nodes by SQL list
+[] HistoryPush on Error
+
+[] Working Files Operations

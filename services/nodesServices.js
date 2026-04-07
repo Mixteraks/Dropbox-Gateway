@@ -1,4 +1,5 @@
 import { prisma } from '../lib/prisma.ts'
+import { connectToSSE } from './lisenHeartbeat.js';
 
 class nodesServices{
     async nodeList(req, res){
@@ -6,9 +7,8 @@ class nodesServices{
     }
 
     // Register or update a node in Postgres using Prisma. Expects fields in `req.body`.
-    async registerNode(req, res){
-        const src = req && req.body ? req.body : req || {}
-        const { current_ip, hardware_id, name, total_space, created_at, last_connection, port } = src
+    async registerNode(body){
+        const { current_ip, hardware_id, name, total_space, created_at, last_connection, port } = body
 
         // try to find existing by hardware_id
         let node = await prisma.Nodes.findFirst({ where: { hardware_id } })
@@ -19,15 +19,17 @@ class nodesServices{
             name: name || undefined,
             total_space: typeof total_space !== 'undefined' && total_space !== null ? BigInt(total_space) : undefined,
             port: typeof port !== 'undefined' ? Number(port) : undefined,
-            last_connect: last_connection ? new Date(last_connection) : undefined,
+            last_connect: new Date,
             created_at: created_at ? new Date(created_at) : undefined
         }
 
         if(node){
             node = await prisma.Nodes.update({ where: { id: node.id }, data })
         } else {
-            node = prisma.Nodes.create({ data })
+            node = await prisma.Nodes.create({ data })
         }
+
+        connectToSSE(data.hardware_id, data.current_ip, data.port)
 
         return node
     }
