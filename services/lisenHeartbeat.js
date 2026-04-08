@@ -1,10 +1,8 @@
 import "dotenv/config";
 import { EventSource } from 'eventsource';
-import { createClient } from "redis";
+import { redis } from "../lib/redis.js";
 
-const client = await createClient({url: `${process.env.REDIS_URL}`})
-    .on("error", (err) => console.log("Redis Client Error", err))
-    .connect();
+const client = redis
 
 const activeConnections = new Map();
 
@@ -35,7 +33,7 @@ const connectToSSE = (id, ip, port, attempts=0) => {
         console.warn(`SSE connection error ${id} (${attempts + 1}/${MAX_ATTEMPTS})`);
     };
 
-    es.onopen = () => console.log(`Connection ${id}@${ip}:${port}`);
+    es.onopen = () => console.log(`Connected ${id}@${ip}:${port}`);
 };
 
 

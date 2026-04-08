@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import FormData from 'form-data'
 import { prisma } from '../lib/prisma.ts'
 import { v4 } from 'uuid'
@@ -52,7 +53,7 @@ class fileServices {
     }
 
     findAviableNodes(size){
-        return null
+        
     }
 }
 

@@ -2,7 +2,8 @@
 ## GATEWAY
 Projekt systemu bazy plików w architektórze rozproszonej. 
 
-Moduł gateway jest mostem między użytkownikiem a poszczególnym nodem
+Moduł gateway jest mostem między użytkownikiem a poszczególnym nodem. 
+Zapisuje on w db na jakim node został wysłany poszczególny plik.
 
 ---
 ### Files Routes
@@ -23,3 +24,4 @@ Moduł gateway jest mostem między użytkownikiem a poszczególnym nodem
 [] HistoryPush on Error
 
 [] Working Files Operations
+[] Multi Node Save?

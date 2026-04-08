@@ -1,10 +1,46 @@
 import { prisma } from '../lib/prisma.ts'
 import { connectToSSE } from './lisenHeartbeat.js';
+import { redis } from '../lib/redis.js';
 
 class nodesServices{
-    async nodeList(req, res){
-        return null;
+    async nodeList(nodeID){
+        if(!nodeID){
+            let cursor = '0';
+            const results = [];
+
+            do {
+                const reply = await redis.scan(cursor, {
+                    MATCH: 'heartbeat:*',
+                    COUNT: 100
+                });
+
+                cursor = reply.cursor;
+
+                for (const key of reply.keys) {
+                const type = await redis.type(key);
+
+                let value;
+
+                if (type === 'list') {
+                    value = await redis.lRange(key, 0, -1);
+                } else if (type === 'hash') {
+                    value = await redis.hGetAll(key);
+                } else if (type === 'string') {
+                    value = await redis.get(key);
+                } else if (type === 'set') {
+                    value = await redis.sMembers(key);
+                }
+
+                const id = key.split(':')[1];
+
+                results.push({ id, key, type, value });
+                }
+
+            } while (cursor !== '0');
+
+        return results;
     }
+}
 
     // Register or update a node in Postgres using Prisma. Expects fields in `req.body`.
     async registerNode(body){
