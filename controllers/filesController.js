@@ -15,11 +15,11 @@ export const postFiles = async (req, res) => {
 
 export const getFile = async (req, res) => {
     try{
-        const { user } = req
+        // const { user } = req
         // TODO: ADD USER VERYFICATION
         const cs = new fileServices
-        const cluster = await cs.getFile(req)
-        res.send(cluster)
+        // `getFile` streams or sends the response itself to avoid buffering large files here
+        await cs.getFile(req, res)
     } 
     catch (error) {
         res.status(400).json({"status":"error","message":"Something went wrong","code":100, "context": error})
@@ -28,7 +28,7 @@ export const getFile = async (req, res) => {
 
 export const getFolder = async (req, res) => {
     try{
-        const { user } = req
+        // const { user } = req
         // TODO: ADD USER VERYFICATION
         const cs = new fileServices()
         const cluster = await cs.getFolder(req)
